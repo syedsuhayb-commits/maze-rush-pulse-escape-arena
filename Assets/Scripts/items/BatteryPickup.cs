@@ -2,7 +2,11 @@ using UnityEngine;
 
 public class BatteryPickup : MonoBehaviour
 {
+    [Header("Game Manager")]
     public GameManager gameManager;
+
+    [Header("Door Controller")]
+    public ExitDoorController exitDoorController;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -11,6 +15,11 @@ public class BatteryPickup : MonoBehaviour
             if (gameManager != null)
             {
                 gameManager.CollectBattery();
+            }
+
+            if (exitDoorController != null)
+            {
+                exitDoorController.UnlockDoor();
             }
 
             gameObject.SetActive(false);
