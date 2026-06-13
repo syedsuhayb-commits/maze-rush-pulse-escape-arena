@@ -34,9 +34,7 @@ public class MonsterAI : MonoBehaviour
         agent.speed = patrolSpeed;
 
         if (patrolPoints.Length > 0)
-        {
             agent.SetDestination(patrolPoints[0].position);
-        }
 
         PlayAnim("Walk");
     }
@@ -64,17 +62,11 @@ public class MonsterAI : MonoBehaviour
         float distance = Vector3.Distance(transform.position, player.position);
 
         if (distance <= attackDistance)
-        {
             Attack();
-        }
         else if (distance <= chaseDistance)
-        {
             Chase();
-        }
         else
-        {
             Patrol();
-        }
     }
 
     void Patrol()
@@ -90,9 +82,7 @@ public class MonsterAI : MonoBehaviour
             currentPoint++;
 
             if (currentPoint >= patrolPoints.Length)
-            {
                 currentPoint = 0;
-            }
 
             agent.SetDestination(patrolPoints[currentPoint].position);
         }
@@ -114,9 +104,7 @@ public class MonsterAI : MonoBehaviour
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             if (playerHealth == null)
-            {
                 playerHealth = FindObjectOfType<PlayerHealth>();
-            }
 
             if (playerHealth != null)
             {
@@ -135,14 +123,12 @@ public class MonsterAI : MonoBehaviour
         agent.isStopped = true;
         PlayAnim("Idle");
 
-        Debug.Log("GHOUL STUNNED BY SCREAM");
+        Debug.Log("GHOUL STUNNED");
     }
 
     void PlayAnim(string animName)
     {
         if (anim != null && !anim.IsPlaying(animName))
-        {
             anim.Play(animName);
-        }
     }
 }
