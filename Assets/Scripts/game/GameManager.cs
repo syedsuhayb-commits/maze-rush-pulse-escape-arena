@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections.Generic;
@@ -25,6 +26,15 @@ public class GameManager : MonoBehaviour
     public TMP_Text endTitleText;
     public TMP_Text endSubText;
     public TMP_Text leaderboardText;
+
+    [Header("Battery UI")]
+    public Image batteryImage;
+
+    public Sprite batteryFull;
+    public Sprite batteryMedium;
+    public Sprite batteryLow;
+
+    private float batteryPercent;
 
     [Header("Player")]
     public FirstPersonController playerController;
@@ -54,7 +64,7 @@ public class GameManager : MonoBehaviour
 
         if (objectiveText != null)
         {
-            objectiveText.text = "Objective: Find the Battery";
+            objectiveText.text = "Find the Battery";
         }
 
         if (messageText != null)
@@ -100,9 +110,43 @@ public class GameManager : MonoBehaviour
 
     void UpdateTimerUI()
     {
+        batteryPercent = (currentTime / totalTime) * 100f;
+
         if (timerText != null)
         {
-            timerText.text = "Time: " + currentTime.ToString("F2");
+            timerText.text = Mathf.CeilToInt(batteryPercent) + "%";
+
+            if (batteryPercent <= 20f)
+            {
+                timerText.color = Color.red;
+
+                float pulse =
+                    0.5f +
+                    Mathf.PingPong(Time.time * 2f, 0.5f);
+
+                timerText.alpha = pulse;
+            }
+            else
+            {
+                timerText.color = Color.white;
+                timerText.alpha = 1f;
+            }
+        }
+
+        if (batteryImage != null)
+        {
+            if (batteryPercent > 60f)
+            {
+                batteryImage.sprite = batteryFull;
+            }
+            else if (batteryPercent > 20f)
+            {
+                batteryImage.sprite = batteryMedium;
+            }
+            else
+            {
+                batteryImage.sprite = batteryLow;
+            }
         }
     }
 
@@ -117,7 +161,7 @@ public class GameManager : MonoBehaviour
 
         if (objectiveText != null)
         {
-            objectiveText.text = "Objective: Reach the Exit";
+            objectiveText.text = "Reach the Exit";
         }
 
         ShowMessage("Battery Collected! Exit Unlocked!");
