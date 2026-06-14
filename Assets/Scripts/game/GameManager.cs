@@ -164,7 +164,10 @@ public class GameManager : MonoBehaviour
             objectiveText.text = "Reach the Exit";
         }
 
-        ShowMessage("Battery Collected! Exit Unlocked!");
+        ShowMessage("Key Collected! Exit Unlocked");
+        messageText.gameObject.SetActive(true);
+        CancelInvoke(nameof(HideMessage));
+        Invoke(nameof(HideMessage), 3f);
     }
 
     public bool HasBattery()
@@ -298,6 +301,14 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void HideMessage()
+    {
+        if (messageText != null)
+        {
+            messageText.gameObject.SetActive(false);
+        }
     }
 
     // ---------------- LEADERBOARD SYSTEM ----------------
