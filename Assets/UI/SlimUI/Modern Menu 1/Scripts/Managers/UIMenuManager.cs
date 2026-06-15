@@ -69,10 +69,9 @@ namespace SlimUI.ModernMenu{
         public GameObject loadingMenu;
 		[Tooltip("The loading bar Slider UI element in the Loading Screen")]
         public Slider loadingBar;
-        public TMP_Text loadPromptText;
-		public KeyCode userPromptKey;
+        public float loadingDelay = 7f;
 
-		[Header("SFX")]
+        [Header("SFX")]
         [Tooltip("The GameObject holding the Audio Source component for the HOVER SOUND")]
         public AudioSource hoverSound;
         [Tooltip("The GameObject holding the Audio Source component for the AUDIO SLIDER")]
@@ -261,30 +260,38 @@ namespace SlimUI.ModernMenu{
 			#endif
 		}
 
-		// Load Bar synching animation
-		IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
-			AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-			operation.allowSceneActivation = false;
-			mainCanvas.SetActive(false);
-			loadingMenu.SetActive(true);
+        // Load Bar synching animation
+        IEnumerator LoadAsynchronously(string sceneName)
+        {
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+            operation.allowSceneActivation = false;
 
-			while (!operation.isDone){
-				float progress = Mathf.Clamp01(operation.progress / .95f);
-				loadingBar.value = progress;
+            mainCanvas.SetActive(false);
+            loadingMenu.SetActive(true);
 
-				if (operation.progress >= 0.9f && waitForInput){
-					loadPromptText.text = "Press " + userPromptKey.ToString().ToUpper() + " to continue";
-					loadingBar.value = 1;
+            bool timerStarted = false;
 
-					if (Input.GetKeyDown(userPromptKey)){
-						operation.allowSceneActivation = true;
-					}
-                }else if(operation.progress >= 0.9f && !waitForInput){
-					operation.allowSceneActivation = true;
-				}
+            while (!operation.isDone)
+            {
+                float progress = Mathf.Clamp01(operation.progress / 0.9f);
+                loadingBar.value = progress;
 
-				yield return null;
-			}
-		}
-	}
+                if (operation.progress >= 0.9f)
+                {
+                    loadingBar.value = 1f;
+
+                    if (!timerStarted)
+                    {
+                        timerStarted = true;
+
+                        yield return new WaitForSeconds(loadingDelay);
+
+                        operation.allowSceneActivation = true;
+                    }
+                }
+
+                yield return null;
+            }
+        }
+    }
 }
