@@ -1,8 +1,9 @@
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.SceneManagement;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,6 +36,12 @@ public class GameManager : MonoBehaviour
     public Sprite batteryLow;
 
     private float batteryPercent;
+
+    [Header("Light")]
+    public Light flashlight;
+    private bool flickered20 = false;
+    private bool flickered10 = false;
+    private bool flickered5 = false;
 
     [Header("Player")]
     public FirstPersonController playerController;
@@ -148,6 +155,57 @@ public class GameManager : MonoBehaviour
                 batteryImage.sprite = batteryLow;
             }
         }
+
+        if (batteryPercent <= 20f && !flickered20)
+        {
+            flickered20 = true;
+            StartCoroutine(FlashlightFlicker());
+        }
+
+        if (batteryPercent <= 10f && !flickered10)
+        {
+            flickered10 = true;
+            StartCoroutine(FlashlightFlicker());
+        }
+
+        if (batteryPercent <= 5f)
+        {
+            if (!IsInvoking(nameof(StartFlicker)))
+            {
+                InvokeRepeating(nameof(StartFlicker), 0f, 0.5f);
+            }
+        }
+
+        if (batteryPercent <= 0f && flashlight != null)
+        {
+            StopAllCoroutines();
+            flashlight.enabled = false;
+        }
+
+    }
+
+    void StartFlicker()
+    {
+        StartCoroutine(FlashlightFlicker());
+    }
+
+    IEnumerator FlashlightFlicker()
+    {
+        if (flashlight == null)
+        {
+            yield break;
+        }
+
+        flashlight.enabled = false;
+        yield return new WaitForSeconds(0.1f);
+
+        flashlight.enabled = true;
+        yield return new WaitForSeconds(0.1f);
+
+        flashlight.enabled = false;
+        yield return new WaitForSeconds(0.15f);
+
+        flashlight.enabled = true;
     }
 
     public void CollectBattery()

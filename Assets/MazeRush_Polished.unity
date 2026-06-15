@@ -1359,6 +1359,7 @@ MonoBehaviour:
   batteryFull: {fileID: 21300000, guid: 5668b389cab005443b0d8056b00cd49e, type: 3}
   batteryMedium: {fileID: 21300000, guid: 1a95716c74b6e9f4b83528c2bc7aa2a9, type: 3}
   batteryLow: {fileID: 21300000, guid: 20a51aa93f3cae141b60090b36202519, type: 3}
+  flashlight: {fileID: 1546264671}
   playerController: {fileID: 1622928626}
   ghostRecorder: {fileID: 268888833}
 --- !u!114 &268888833
