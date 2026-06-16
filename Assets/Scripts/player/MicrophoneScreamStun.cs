@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.UI;
 public class MicrophoneScreamStun : MonoBehaviour
 {
     public MonsterAI[] monsters;
@@ -12,9 +12,18 @@ public class MicrophoneScreamStun : MonoBehaviour
     private AudioClip micClip;
     private string micName;
     private float nextScreamTime = 0f;
+    private float cooldownStartTime;
+
+    public Image screamCooldownBar;
 
     void Start()
     {
+
+        if (screamCooldownBar != null)
+        {
+            screamCooldownBar.fillAmount = 1f;
+        }
+
         if (Microphone.devices.Length > 0)
         {
             micName = Microphone.devices[0];
@@ -25,10 +34,12 @@ public class MicrophoneScreamStun : MonoBehaviour
         {
             Debug.LogError("No microphone found!");
         }
+
     }
 
     void Update()
     {
+
         if (micClip == null) return;
 
         float loudness = GetMicLoudness();
@@ -36,9 +47,12 @@ public class MicrophoneScreamStun : MonoBehaviour
         if (loudness >= screamThreshold && Time.time >= nextScreamTime)
         {
             StunNearestMonster();
+            cooldownStartTime = Time.time;
             nextScreamTime = Time.time + cooldown;
             Debug.Log("SCREAM DETECTED. Loudness: " + loudness);
         }
+
+        UpdateCooldownUI();
     }
 
     float GetMicLoudness()
@@ -86,5 +100,21 @@ public class MicrophoneScreamStun : MonoBehaviour
         {
             Debug.Log("Scream detected but no monster nearby");
         }
+    }
+
+    void UpdateCooldownUI()
+    {
+        if (screamCooldownBar == null)
+            return;
+
+        if (Time.time >= nextScreamTime)
+        {
+            screamCooldownBar.fillAmount = 1f;
+            return;
+        }
+
+        float elapsed = Time.time - cooldownStartTime;
+
+        screamCooldownBar.fillAmount = elapsed / cooldown;
     }
 }
